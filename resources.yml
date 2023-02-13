@@ -133,8 +133,14 @@ cognitoCustomerRole:
           Action:
               - "dynamodb:*"
           Resource:
-            - !GetAtt booksTable.Arn
             - !GetAtt orderTable.Arn
+        - Effect: Allow          
+          Action:
+              - "dynamodb:GetItem"
+              - "dynamodb:Query"
+              - "dynamodb:BatchGetItem"
+          Resource:
+            - !GetAtt booksTable.Arn
 
   RoleName: "hridoy-bookstore-customer-role"
 
