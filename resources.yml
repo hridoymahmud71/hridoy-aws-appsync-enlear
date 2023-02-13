@@ -45,4 +45,96 @@ orderTable:
     Tags: 
       - Key: Name
         Value: order-table
- 
+
+#Cognito user pool
+cognitoUserPool:
+  Type: AWS::Cognito::UserPool
+  Properties:   
+  UsernameAttributes: 
+    - email
+  UserPoolName: "HridoyBookstoreUserPool"
+
+#cognito user pool client
+cognitoUserPoolClient:
+  Type: AWS::Cognito::UserPoolClient
+  Properties: 
+    ClientName: Web    
+    UserPoolId: !Ref cognitoUserPool
+
+
+#congnito user pool group  Admin Group
+cognitoAdminGroup:
+  Type: AWS::Cognito::UserPoolGroup
+  Properties: 
+    Description: "Admin Users"
+    GroupName: Admin
+    Precedence: 0
+    RoleArn: !GetAtt cognitoAdminRole.Arn
+    UserPoolId: !Ref cognitoUserPool
+
+# cognito admin iam role
+cognitoAdminRole:
+  Type: AWS::IAM::Role
+  Properties: 
+  AssumeRolePolicyDocument: 
+    Version: "2012-10-17"
+    Statement:
+    - Effect: Allow
+      Principal:
+        Fedarated:
+          - "cognito-identity.amazonaws.com"
+      Action:
+        - "sts:AssumeRoleWithWebIdentiry"
+  Description: "I AM role used by admins"  
+  Policies: 
+    - PolicyName: "hridoy-bookstore-admin-group-policy"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: Allow          
+          Action:
+              - "dynamodb:*"
+          Resource:
+            - !GetAtt booksTable.Arn
+            - !GetAtt orderTable.Arn
+
+  RoleName: "hridoy-bookstore-admin-role"
+
+#congnito user pool group  Admin Group
+cognitoCustomerGroup:
+  Type: AWS::Cognito::UserPoolGroup
+  Properties: 
+    Description: "Customer Users"
+    GroupName: Customer
+    Precedence: 1
+    RoleArn: !GetAtt cognitoCustomerRole.Arn
+    UserPoolId: !Ref cognitoUserPool
+
+# cognito customer iam role
+cognitoCustomerRole:
+  Type: AWS::IAM::Role
+  Properties: 
+  AssumeRolePolicyDocument: 
+    Version: "2012-10-17"
+    Statement:
+    - Effect: Allow
+      Principal:
+        Fedarated:
+          - "cognito-identity.amazonaws.com"
+      Action:
+        - "sts:AssumeRoleWithWebIdentiry"
+  Description: "I AM role used by customers"  
+  Policies: 
+    - PolicyName: "hridoy-bookstore-customer-group-policy"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: Allow          
+          Action:
+              - "dynamodb:*"
+          Resource:
+            - !GetAtt booksTable.Arn
+            - !GetAtt orderTable.Arn
+
+  RoleName: "hridoy-bookstore-customer-role"
+
