@@ -83,19 +83,57 @@ cognitoAdminGroup:
 # cognito admin iam role
 cognitoAdminRole:
   Type: AWS::IAM::Role
+  Properties:
+    AssumeRolePolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Effect: Allow
+          Principal:
+            Federated:
+              - cognito-identity.amazonaws.com
+          Action:
+            - sts:AssumeRoleWithWebIdentity
+    Description: I AM role used by admins
+    Policies:
+      - PolicyName: hridoy-bookstore-admin-group-policy
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:*
+              Resource:
+                - !GetAtt booksTable.Arn
+                - !GetAtt orderTable.Arn
+    RoleName: hridoy-bookstore-admin-role
+
+
+#congnito user pool group  Customer Group
+cognitoCustomerGroup:
+  Type: AWS::Cognito::UserPoolGroup
+  Properties: 
+    Description: "Customer Users"
+    GroupName: Customer
+    Precedence: 1
+    RoleArn: !GetAtt cognitoCustomerRole.Arn
+    UserPoolId: !Ref cognitoUserPool
+
+# cognito customer iam role
+cognitoCustomerRole:
+  Type: AWS::IAM::Role
   Properties: 
     AssumeRolePolicyDocument: 
       Version: "2012-10-17"
       Statement:
       - Effect: Allow
         Principal:
-          Fedarated:
+          Federated:
             - "cognito-identity.amazonaws.com"
         Action:
           - "sts:AssumeRoleWithWebIdentity"
-    Description: "I AM role used by admins"  
+    Description: "I AM role used by customers"  
     Policies: 
-      - PolicyName: "hridoy-bookstore-admin-group-policy"
+      - PolicyName: "hridoy-bookstore-customer-group-policy"
         PolicyDocument:
           Version: "2012-10-17"
           Statement:
@@ -103,51 +141,13 @@ cognitoAdminRole:
             Action:
                 - "dynamodb:*"
             Resource:
-              - !GetAtt booksTable.Arn
               - !GetAtt orderTable.Arn
-    RoleName: "hridoy-bookstore-admin-role"
-
-# #congnito user pool group  Admin Group
-# cognitoCustomerGroup:
-#   Type: AWS::Cognito::UserPoolGroup
-#   Properties: 
-#     Description: "Customer Users"
-#     GroupName: Customer
-#     Precedence: 1
-#     RoleArn: !GetAtt cognitoCustomerRole.Arn
-#     UserPoolId: !Ref cognitoUserPool
-
-# # cognito customer iam role
-# cognitoCustomerRole:
-#   Type: AWS::IAM::Role
-#   Properties: 
-#     AssumeRolePolicyDocument: 
-#       Version: "2012-10-17"
-#       Statement:
-#       - Effect: Allow
-#         Principal:
-#           Fedarated:
-#             - "cognito-identity.amazonaws.com"
-#         Action:
-#           - "sts:AssumeRoleWithWebIdentity"
-#     Description: "I AM role used by customers"  
-#     Policies: 
-#       - PolicyName: "hridoy-bookstore-customer-group-policy"
-#         PolicyDocument:
-#           Version: "2012-10-17"
-#           Statement:
-#           - Effect: Allow          
-#             Action:
-#                 - "dynamodb:*"
-#             Resource:
-#               - !GetAtt orderTable.Arn
-#           - Effect: Allow          
-#             Action:
-#                 - "dynamodb:GetItem"
-#                 - "dynamodb:Query"
-#                 - "dynamodb:BatchGetItem"
-#             Resource:
-#               - !GetAtt booksTable.Arn
-
-#     RoleName: "hridoy-bookstore-customer-role"
+          - Effect: Allow          
+            Action:
+                - "dynamodb:GetItem"
+                - "dynamodb:Query"
+                - "dynamodb:BatchGetItem"
+            Resource:
+              - !GetAtt booksTable.Arn
+    RoleName: "hridoy-bookstore-customer-role"
 
