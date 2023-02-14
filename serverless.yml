@@ -3,8 +3,7 @@ frameworkVersion: '2'
 
 provider:
   name: aws
-  runtime: nodejs16.x
-  lamdaHashingVersion: 20201221
+  runtime: nodejs14.x
   region: us-east-1
   stage: dev
 
