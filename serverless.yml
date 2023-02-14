@@ -7,6 +7,33 @@ provider:
   region: us-east-1
   stage: dev
 
+plugins:
+  - serverless-appsync-plugin
+
+# follow this for the custom attribute https://github.com/sid88in/serverless-appsync-plugin
+custom:
+  appSync:
+    name: hridoyAppSyncApi
+    authenticationType: AMAZON_COGNITO_USER_POOLS
+    # for AMAZON_COGNITO_USER_POOLS
+    userPoolConfig:
+      awsRegion: us-east-1
+      defaultAction: ALLOW
+      userPoolId: !Ref cognitoUserPool
+    mappingTemplatesLocation: # defaults to mapping-templates
+    mappingTemplates:
+      - type: Query
+        field: getBooksById
+        dataSource: booksTable
+      - type: Mutation
+        field: createBook
+        dataSource: booksTable
+    dataSources:
+      - type: AMAZON_DYNAMODB
+        name: booksTable
+        config:
+          tableName: !Ref booksTable
+
 resources:
   Resources:
     ${file(resources.yml)}
