@@ -23,7 +23,7 @@ custom:
     mappingTemplatesLocation: # defaults to mapping-templates
     mappingTemplates:
       - type: Query
-        field: getBooksById
+        field: getBookById
         dataSource: booksTable
       - type: Mutation
         field: createBook
