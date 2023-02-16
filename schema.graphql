@@ -43,16 +43,16 @@ type Mutation {
     createOrder(newOrder:OrderInput): Boolean
 }
 
-type OrderInput {
+input OrderInput {
     items:[OrderItemInput]
 }
 
-type OrderItemInput {
+input OrderItemInput {
     bookID:ID!
     quantity:Int!
 }
 
-type BookInput {
+input BookInput {
     title:String!
     description:String
     imageUrl:AWSURL
