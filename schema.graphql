@@ -39,8 +39,8 @@ type Book {
 }
 
 type Mutation {
-    createBook(newBook:BookInput):Book! @aws_auth(cognito_groups(["Admin"]))
-    createBook(newOrder:OrderInput): Boolean
+    createBook(newBook:BookInput):Book! @aws_auth(cognito_groups:["Admin"])
+    createOrder(newOrder:OrderInput): Boolean
 }
 
 type OrderInput {
